@@ -1,5 +1,4 @@
 using ParticleTracking
-using Images
 using Test
 
 @testset "Connected components" begin
