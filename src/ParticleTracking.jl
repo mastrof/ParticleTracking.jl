@@ -14,5 +14,6 @@ Stack2{T} = Stack{T,2}
 Stack3{T} = Stack{T,3}
 
 include("connected_components.jl")
+include("centroids.jl")
 
 end
