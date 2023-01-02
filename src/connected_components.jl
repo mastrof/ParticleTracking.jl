@@ -1,12 +1,25 @@
 export connected_components, collect_groups
 
+"""
+    connected_components(stack::Stack; bkg = zero(eltype(first(stack))), dims = coords_spatial(first(stack)))
+    connected_components(img::AbstractArray; bkg = zero(eltype(img)), dims = coords_spatial(img))
+    connected_components(stack::Stack, connectivity; bkg = zero(eltype(first(stack))))
+    connected_components(img::AbstractArray, connectivity; bkg = zero(eltype(img)))
+Find the connected components in a stack `stack` or a single image `img`.
+Components are defined as connected voxels that all have the same value,
+distinct from the background component `bkg`.
+
+Connectivity can be specified either through a list `dims` indicating which dimensions
+are used to determine connectivity, or through a `connectivity` matrix.
+See `label_components` from Images.jl for more details.
+"""
 function connected_components(stack::Stack;
     bkg = zero(eltype(first(stack))),
     dims = coords_spatial(first(stack))
 )
     map(img -> connected_components(img; bkg, dims), stack)
 end
-function connected_components(img::AbstractArray{<:Real};
+function connected_components(img::AbstractArray;
     bkg = zero(eltype(img)), dims = coords_spatial(img)
 )
     labels = label_components(img; bkg, dims)
@@ -18,7 +31,7 @@ function connected_components(stack::Stack,
 )
     map(img -> connected_components(img, connectivity; bkg), stack)
 end
-function connected_components(img::AbstractArray{<:Real},
+function connected_components(img::AbstractArray,
     connectivity; bkg = zero(eltype(img))
 )
     labels = label_components(mg, connectivity; bkg)
