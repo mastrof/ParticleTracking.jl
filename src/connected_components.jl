@@ -1,4 +1,4 @@
-export connected_components, collect_groups
+export connected_components
 
 """
     connected_components(stack::Stack; bkg = zero(eltype(first(stack))), dims = coords_spatial(first(stack)))
