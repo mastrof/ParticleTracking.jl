@@ -13,4 +13,6 @@ Stack{T,N} = Vector{Array{T,N}}
 Stack2{T} = Stack{T,2}
 Stack3{T} = Stack{T,3}
 
+include("connected_components.jl")
+
 end
