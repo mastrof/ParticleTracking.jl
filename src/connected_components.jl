@@ -34,7 +34,7 @@ end
 function connected_components(img::AbstractArray,
     connectivity; bkg = zero(eltype(img))
 )
-    labels = label_components(mg, connectivity; bkg)
+    labels = label_components(img, connectivity; bkg)
     collect_groups(labels)
 end
 
