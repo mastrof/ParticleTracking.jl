@@ -14,6 +14,9 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 StatsBase = "0.33"
+Images = "0.25"
+OffsetArrays = "1"
+Hungarian = "0.7"
 julia = "1"
 
 [extras]
