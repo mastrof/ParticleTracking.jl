@@ -5,15 +5,26 @@ using LinearAlgebra, StatsBase, Statistics
 using OffsetArrays
 using Hungarian
 using Images
+using BlobDetection
 
-# shorthand notations
-CI = CartesianIndex
-CC{N} = Vector{CI{N}} # connected component
-Stack{T,N} = Vector{Array{T,N}}
-Stack2{T} = Stack{T,2}
-Stack3{T} = Stack{T,3}
+export Trajectory
 
-include("connected_components.jl")
-include("centroids.jl")
+struct Trajectory{T<:Integer,B<:AbstractBlob}
+    times::Vector{T}
+    blobs::Vector{B}
+end
+
+function Trajectory(
+    blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}},
+    connections::AbstractVector{<:Integer}
+)
+    times = findall(!iszero, connections)
+    trajectory_blobs = [blobs[t][connections[t]] for t in times]
+    Trajectory(times, trajectory_blobs)
+end
+
+
+include("linking.jl")
+include("trajectory_api.jl")
 
 end
