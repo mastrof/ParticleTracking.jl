@@ -2,9 +2,12 @@ export detect_blobs
 
 """
     detect_blobs(img, σscales; edges::Tuple=(true, false, ...), σshape::Tuple=(1, ...), rthresh=0.001) -> Vector{Blob}
+    detect_blobs(stack, σscales; ...)
 
 Find "blobs" in a N-dimensional image using the negative Laplacian of Gaussian (LoG) filter
 for the specified set of scales (`σscales`).
+If a stack (i.e. a vector of N-dimensional images) is passed instead,
+blobs are identified in each frame individually.
 The algorithm searches for places where the filtered image (for a particular σ) is at a peak
 compared to all spatially and σ-adjacent voxels, where σ is `σscales[i] * σshape` for some `i`.
 By default, `σshape` is an ntuple of 1s.
@@ -20,6 +23,12 @@ of `maximum(abs, img)`.
 This method is based on a minor modification of the `blob_LoG` algorithm implemented in
 the ImageFiltering package.
 """
+function detect_blobs end
+function detect_blobs(stack::AbstractVector{<:AbstractArray{T,N}}, σscales;
+    kwargs...
+) where {T<:Union{Real,AbstractGray},N}
+    map(img -> detect_blobs(img, σscales; kwargs...), stack)
+end
 function detect_blobs(img::AbstractArray{T,N}, σscales;
     edges::Union{Bool,Tuple{Bool,Vararg{Bool,N}}} = (true, ntuple(d -> false, Val(N))...),
     σshape::NTuple{N,Real} = ntuple(d -> 1, Val(N)),
