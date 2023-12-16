@@ -36,14 +36,15 @@ function detect_blobs(img::AbstractArray{T,N}, σscales;
     if !iszero(rthresh)
         imgmax = maximum(abs, img)
         [
-            Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x],
+            refine(Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x],
                 img_LoG[x[1], colons...]
-            ) for x in maxima if img_LoG[x] > rthresh*imgmax
+            )) for x in maxima if img_LoG[x] > rthresh*imgmax
         ]
     else
         [
-            Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x], img_LoG)
-            for x in maxima
+            refine(Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x],
+                img_LoG[x[1], colons...]
+            )) for x in maxima
         ]
     end
 end
