@@ -38,21 +38,26 @@ function detect_blobs(img::AbstractArray{T,N}, σscales;
         edges = (edges, ntuple(d -> edges, Val(N))...)
     end
     sigmas = sort(σscales)
-    # apply LoG filter for each scale
-    img_LoG = multiLoG(img, sigmas, σshape)
+    # apply -LoG filter for each scale
+    # and cap all negative values to 0
+    img_LoG = max.(multiLoG(img, sigmas, σshape), zero(T))
     colons = ntuple(d -> Colon(), Val(N))
     maxima = findlocalmaxima(img_LoG; edges)
     if !iszero(rthresh)
         imgmax = maximum(abs, img)
-        [
-            refine(Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x],
-                img_LoG[x[1], colons...]
+        [refine(Blob(
+            CartesianIndex(Base.tail(x.I)),
+            sigmas[x[1]].*σshape,
+            img_LoG[x],
+            img_LoG[x[1], colons...]
             )) for x in maxima if img_LoG[x] > rthresh*imgmax
         ]
     else
-        [
-            refine(Blob(CartesianIndex(Base.tail(x.I)), sigmas[x[1]].*σshape, img_LoG[x],
-                img_LoG[x[1], colons...]
+        [refine(Blob(
+            CartesianIndex(Base.tail(x.I)),
+            sigmas[x[1]].*σshape,
+            img_LoG[x],
+            img_LoG[x[1], colons...]
             )) for x in maxima
         ]
     end
