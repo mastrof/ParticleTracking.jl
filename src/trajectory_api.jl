@@ -1,7 +1,9 @@
-export timestamps, length, startpoint, endpoint
+export timestamps, startpoint, endpoint
 export location, amplitude, scale, radius, zeroth_moment, second_moment, intensity_map
 export displacement_net, displacement_gross
 
+
+#== Trajectory ==#
 timestamps(traj::Trajectory) = traj.times
 Base.length(traj::Trajectory) = length(traj.times)
 startpoint(traj::Trajectory) = location(first(traj.blobs))
@@ -12,7 +14,8 @@ for f in (location, amplitude, scale, radius, zeroth_moment, second_moment, inte
     fs = nameof(f)
     @eval function $m.$fs(traj::Trajectory, args...)
         t1, t2 = extrema(timestamps(traj))
-        return OffsetArray($fs.(traj.blobs), t1:t2)
+        #return OffsetArray($fs.(traj.blobs), t1:t2)
+        return $fs.(traj.blobs)
     end
 end
 

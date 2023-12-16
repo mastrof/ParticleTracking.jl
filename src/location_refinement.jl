@@ -1,22 +1,4 @@
-export BlobRefined, refine, location_refined
-
-struct BlobRefined{T,S,N} <: AbstractBlob{T,S,N}
-    location::NTuple{N,T}
-    location_raw::CartesianIndex{N}
-    σ::S
-    amplitude::T
-    m0::T
-    m2::T
-    intensity_map
-end
-location_raw(blob::BlobRefined) = blob.location_raw
-
-function BlobRefined(blob::AbstractBlob{T,S,N}, offsets::NTuple{N,T}) where {T,S,N}
-    raw_location = location(blob)
-    BlobRefined(Tuple(raw_location) .+ offsets, raw_location, scale(blob),
-        amplitude(blob), zeroth_moment(blob), second_moment(blob), intensity_map(blob)
-    )
-end
+export refine, offsets
 
 """
     refine(blob::AbstractBlob)
@@ -27,7 +9,7 @@ function refine(blob::AbstractBlob)
 end
 refine(blob::BlobRefined) = blob # do nothing if position is already refined
 
-function offsets(blob::AbstractBlob{T,S,2}) where {T,S}
+function offsets(blob::Blob{T,S,2}) where {T,S}
     x, y = location(blob).I
     σx, σy = scale(blob)
     m0 = zeroth_moment(blob)
@@ -51,3 +33,4 @@ function offsets(blob::AbstractBlob{T,S,2}) where {T,S}
     end
     return (εx, εy)
 end
+offsets(blob::BlobRefined{T,S,N}) where {T,S,N} = ntuple(_ -> 0.0, N)
