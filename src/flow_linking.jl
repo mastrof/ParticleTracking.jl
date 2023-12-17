@@ -139,8 +139,12 @@ function optimize_links!(
     if minZ < 0
         I,J,K,L = minIJKL
         G[I,J] = 1
-        I != 0 && (G[I,L] = 0)
-        J != 0 && (G[K,J] = 0)
+        if I != 0
+            G[I,L] = 0
+        end
+        if J != 0
+            G[K,J] = 0
+        end
         G[K,L] = 1
     end
     nothing
