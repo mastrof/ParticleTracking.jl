@@ -14,8 +14,8 @@ function offsets(blob::Blob{T,S,2}) where {T,S}
     σx, σy = scale(blob)
     m0 = zeroth_moment(blob)
     I = intensity_map(blob)
-    εx = zero(float(T))
-    εy = zero(float(T))
+    εx = zero(Float64)
+    εy = zero(Float64)
     for j in axes(I,2), i in axes(I,1)
         dy = y-j
         dx = x-i

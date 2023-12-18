@@ -31,7 +31,7 @@ end
 
 
 struct BlobRefined{T,S,N} <: AbstractBlob{T,S,N}
-    location::NTuple{N,T}
+    location::NTuple{N,Float64}
     location_raw::CartesianIndex{N}
     σ::S
     amplitude::T
@@ -40,7 +40,7 @@ struct BlobRefined{T,S,N} <: AbstractBlob{T,S,N}
     intensity_map
 end
 
-function BlobRefined(blob::AbstractBlob{T,S,N}, offsets::NTuple{N,T}) where {T,S,N}
+function BlobRefined(blob::AbstractBlob{T,S,N}, offsets::NTuple{N,Float64}) where {T,S,N}
     raw_location = location(blob)
     BlobRefined(Tuple(raw_location) .+ offsets, raw_location, scale(blob),
         amplitude(blob), zeroth_moment(blob), second_moment(blob), intensity_map(blob)
