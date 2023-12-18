@@ -26,14 +26,14 @@ the ImageFiltering package.
 function detect_blobs end
 function detect_blobs(stack::AbstractVector{<:AbstractArray{T,N}}, σscales;
     kwargs...
-) where {T<:Union{Real,AbstractGray},N}
+) where {T<:Real,N}
     map(img -> detect_blobs(img, σscales; kwargs...), stack)
 end
 function detect_blobs(img::AbstractArray{T,N}, σscales;
     edges::Union{Bool,Tuple{Bool,Vararg{Bool,N}}} = (true, ntuple(d -> false, Val(N))...),
     σshape::NTuple{N,Real} = ntuple(d -> 1, Val(N)),
     rthresh::Real = 1 // 1000
-) where {T<:Union{Real,AbstractGray},N}
+) where {T<:Real,N}
     if edges isa Bool
         edges = (edges, ntuple(d -> edges, Val(N))...)
     end
