@@ -1,6 +1,6 @@
 name = "ParticleTracking"
 uuid = "682643da-b995-4346-8c6a-9b654bba8793"
-authors = ["Riccardo Foffi <riccardo.foffi@protonmail.com> and contributors"]
+authors = ["Riccardo Foffi <rfoffi@ethz.ch> and contributors"]
 version = "0.1.0"
 
 [deps]
@@ -11,7 +11,11 @@ OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 PaddedViews = "5432bcbf-9aad-5242-b902-cca2824c8663"
 
 [compat]
+GeometryBasics = "0.4"
+ImageFiltering = "0.7"
+MakieCore = "0.7"
 OffsetArrays = "1"
+PaddedViews = "0.5"
 julia = "1"
 
 [extras]
