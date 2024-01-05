@@ -1,6 +1,7 @@
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
@@ -8,3 +9,4 @@ Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 PaddedViews = "5432bcbf-9aad-5242-b902-cca2824c8663"
+TiffImages = "731e570b-9d59-4bfa-96dc-6df516fadf69"
