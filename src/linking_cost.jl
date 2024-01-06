@@ -1,4 +1,4 @@
-export QuadraticCost, PCost, evaluate_costs!
+export QuadraticCost, PCost
 
 """
     evaluate_costs!(C, from, to, dt, cost, maxcost; kwargs...)
