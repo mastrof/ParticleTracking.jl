@@ -1,13 +1,9 @@
 export QuadraticCost, PCost, evaluate_costs!
 
 """
-    evaluate_costs!(C, from, to, dt, cost, maxdist; kwargs...)
+    evaluate_costs!(C, from, to, dt, cost, maxcost; kwargs...)
 Fill the cost matrix `C` with the costs for linking two vectors of blobs
 (`from` and `to`) `dt` frames apart.
-
-The cost is evaluated according to the `cost` function and
-`maxdist` sets the maximal distance (per frame) allowed for the link
-between two blobs.
 
 Optional kwargs can be passed to the `cost` function.
 """
@@ -16,11 +12,9 @@ function evaluate_costs!(C::OffsetMatrix,
     to::AbstractVector{T},
     dt::Integer,
     cost::Function,
-    maxdist::Real;
+    maxcost::Real;
     kwargs...
 ) where {T<:AbstractBlob}
-    # TODO: move up to initialize_links!
-    maxcost = evaluate_maxcost(T, maxdist, dt, cost; kwargs...)
     for j in axes(C,2), i in axes(C,1)
         if i != 0 && j != 0
             C[i,j] = cost(from[i], to[j]; kwargs...)
