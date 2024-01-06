@@ -52,24 +52,46 @@ function evaluate_maxcost(::Type{<:AbstractBlob{T,S,N}},
     return cost(A, B; kwargs...)
 end
 
+"""
+    QuadraticCost(A, B; g0=1.0, g2=1.0)
+Evaluate the cost of linking two blobs `A` and `B` using the Euclidean
+(𝐿²) norm.
+
+The cost includes the spatial distance of the two blobs, and the distance
+in their zeroth and second intensity moments.
+
+**Keywords**
+- `g0::Real = 1.0`: weight factor for the zeroth moment
+- `g2::Real = 1.0`: weight factor for the second moment
+"""
 function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
     g0::Real = 1.0, g2::Real = 1.0
 )
-    xA = location(A)
-    xB = location(B)
-    dx2 = sum(abs2.(xB .- xA))
-    dm02 = (zeroth_moment(B) - zeroth_moment(A))^2
-    dm22 = (second_moment(B) - second_moment(A))^2
-    return dx2 + g0*dm02 + g2*dm22
+    dx = location(B) .- location(A)
+    dm0 = g0*(zeroth_moment(B) - zeroth_moment(A))
+    dm2 = g2*(second_moment(B) - second_moment(A))
+    return sqrt(sum(y*y for y in dx) + dm0*dm0 + dm2*dm2)
 end
 
+"""
+    PCost(A, B; p=1, g0=1.0, g2=1.0)
+Evaluate the cost of linking two blobs `A` and `B` using the 𝐿ᵖ norm.
+
+The cost includes the spatial distance of the two blobs, and the distance
+in their zeroth and second intensity moments.
+
+**Keywords**
+- `p::Real = 1`: the norm exponent; `p=1` corresponds to the Manhattan metric,
+  `p=Inf` to the Chebyshev metric, and `p=2` to the Euclidean metric
+  (in which case `QuadraticCost` provides slightly better performance)
+- `g0::Real = 1.0`: weight factor for the zeroth moment
+- `g2::Real = 1.0`: weight factor for the second moment
+"""
 function PCost(A::AbstractBlob, B::AbstractBlob;
     p::Real = 1, g0::Real = 1.0, g2::Real = 1.0
 )
-    xA = location(A)
-    xB = location(B)
-    dxp = sum(@. abs(xB - xA)^p)
-    dm0p = abs(zeroth_moment(B) - zeroth_moment(A))^p
-    dm2p = abs(second_moment(B) - second_moment(A))^p
-    return dxp + g0*dm0p + g2*dm2p
+    dx = abs.(location(B) .- location(A))
+    dm0 = g0*abs(zeroth_moment(B) - zeroth_moment(A))
+    dm2 = g2*abs(second_moment(B) - second_moment(A))
+    norm((dx..., dm0, dm2), p)
 end

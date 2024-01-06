@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 PaddedViews = "5432bcbf-9aad-5242-b902-cca2824c8663"
