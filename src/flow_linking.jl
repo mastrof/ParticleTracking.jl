@@ -35,12 +35,18 @@ function mincostflow(blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}};
     memory::Integer, cost::Function, maxdist::Real, kwargs...
 )
     times = eachindex(blobs)[1:end-1]
-    [mincostflow(blobs, t, memory; cost, maxdist, kwargs...) for t in times]
+    T = eltype(eltype(blobs))
+    # precompute max allowed costs for linking
+    maxcost = [
+        isinf(maxdist) ? maxdist : evaluate_maxcost(T, maxdist, r, cost; kwargs...)
+        for r in 1:memory
+    ]
+    [mincostflow(blobs, t, memory; cost, maxcost, kwargs...) for t in times]
 end
 
 function mincostflow(blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}},
     t::Integer, memory::Integer;
-    cost::Function, maxdist::Real, kwargs...
+    cost::Function, maxcost::AbstractVector{<:Real}, kwargs...
 )
     tmax = length(blobs)
     from = blobs[t]
@@ -52,7 +58,7 @@ function mincostflow(blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}},
     cost_matrix = [OffsetMatrix(zeros(Nt+1, n+1), 0:Nt, 0:n) for n in Nr]
     # linearity of cost functional ensures existence of unique optimum
     # but a good initialization of the links can improve performance
-    initialize_links!(linking_matrix, cost_matrix, from, to, t; cost, maxdist, kwargs...)
+    initialize_links!(linking_matrix, cost_matrix, from, to, t; cost, maxcost, kwargs...)
     # rearrange links until optimal configuration is found
     optimize_links!(linking_matrix, cost_matrix, from, to)
     # transform linking matrix into a sequence of connections
@@ -61,11 +67,11 @@ end
 
 function initialize_links!(G::AbstractVector{TG}, C::AbstractVector{TC},
     from::AbstractVector{<:AbstractBlob}, to::AbstractVector{VB}, t::Integer;
-    cost::Function, maxdist::Real, kwargs...
+    cost::Function, maxcost::AbstractVector{<:Real}, kwargs...
 ) where {TG<:OffsetMatrix,TC<:OffsetMatrix,VB<:AbstractVector{<:AbstractBlob}}
     R = eachindex(to)
     for r in R
-        evaluate_costs!(C[r], from, to[r], r, cost, maxdist; kwargs...)
+        evaluate_costs!(C[r], from, to[r], r, cost, maxcost[r]; kwargs...)
         initialize_links!(G[r], C[r], from, to[r], t, r)
     end
 end
