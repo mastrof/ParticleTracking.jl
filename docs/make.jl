@@ -15,7 +15,7 @@ Literate.markdown(
 pages = [
     "Home" => "index.md",
     "Tutorial" => "tutorial.md",
-    #"API" => "api.md"
+    "API" => "api.md"
 ]
 
 makedocs(
