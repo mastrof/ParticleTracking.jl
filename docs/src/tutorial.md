@@ -14,8 +14,9 @@ It is already preprocessed.
 For convenience, we want to convert the pixel values to Float16 or Float32
 values, and normalize these values in the range [0,1].
 
-The entire dataset, a three-dimensional array,
-can be visualized in the form of a volume plot where the `x` and `y` axis
+If you have GLMakie installed, the entire dataset, a three-dimensional array,
+can be visualized in the form of a volume plot (`volume(video)`, not shown here)
+where the `x` and `y` axis
 correspond to the two axes of each image, and the vertical `z` axis
 represents time, i.e. the different frames which compose the video.
 With this plot, we should already be able to identify the salient features
@@ -39,7 +40,6 @@ video = TiffImages.load(fpath) .|> Float16
 rm(fpath) ## clean up after loading the video
 video .-= minimum(video)
 video ./= maximum(video)
-volume(video)
 ````
 
 Before performing the full detection, we can explore the data
@@ -59,7 +59,7 @@ and second (`m₂`) intensity moments of the detected
 blobs (using a batch of 20 frames to provide some meaningful statistics).
 The values of these moments can be used for further filtering or discrimination.
 
-gui_blobs(video)
+gui_blobs(video) !! not fully implemented yet !!
 
 After exploring, we can set the desired parameters and actually perform the detection.
 We will limit the blob sizes between 2 to 4 pixels, and set the intensity
@@ -118,8 +118,8 @@ B = @. view(blobs, setdiff(eachindex(blobs), maybe_spurious))
 let t = 1
     fig, ax, = heatmap(video[:,:,t], colormap=:bone)
     # blobs can be directly plotted in Makie with scatter
-    scatter!(ax, A[t], color=:red, alpha=0.1, markersize=30)
-    scatter!(ax, B[t], color=:green, alpha=0.1, markersize=30)
+    scatter!(ax, A[t], color=:red, alpha=0.3, markersize=30)
+    scatter!(ax, B[t], color=:green, alpha=0.3, markersize=30)
     fig
 end
 ````
