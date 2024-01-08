@@ -1,3 +1,9 @@
+"""
+    image_moments(location, σ, img)
+Evaluate the zeroth and second intensity moment of a blob in `img`
+identified as a a region of size `σ` around `location`.
+Returns a tuple with a view of the blob and the two moments.
+"""
 function image_moments(location::CartesianIndex{2}, σ, img::AbstractArray{T,2}) where T
     x, y = location.I
     σx, σy = σ
