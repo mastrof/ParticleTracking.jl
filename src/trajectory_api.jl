@@ -3,10 +3,25 @@ export location, amplitude, scale, radius, zeroth_moment, second_moment, intensi
 export displacement_net, displacement_gross
 
 
-#== Trajectory ==#
+"""
+    timestamps(trajectory)
+Return the times along the `trajectory` at which blobs have been measured.
+"""
 timestamps(traj::Trajectory) = traj.times
+"""
+    length(trajectory)
+Return the length of the `trajectory`.
+"""
 Base.length(traj::Trajectory) = length(traj.times)
+"""
+    startpoint(trajectory)
+Return the time at which the `trajectory` started.
+"""
 startpoint(traj::Trajectory) = location(first(traj.blobs))
+"""
+    endpoint(trajectory)
+Return the time at which the `trajectory` ended.
+"""
 endpoint(traj::Trajectory) = location(last(traj.blobs))
 
 for f in (location, amplitude, scale, radius, zeroth_moment, second_moment, intensity_map)
