@@ -40,11 +40,11 @@ function evaluate_maxcost(::Type{<:AbstractBlob{T,S,N}},
     # define two dummy blobs dt*maxdist apart and evaluate their linking cost
     posA = ntuple(_ -> 0.0, N)
     posB = ntuple(i -> i==1 ? Float64(dt*maxdist) : 0.0, N)
-    A = BlobRefined(
+    A = Blob(
         posA, CartesianIndex(ntuple(zero, N)),
         S(0 for _ in 1:N), zero(T), zero(T), zero(T), []
     )
-    B = BlobRefined(
+    B = Blob(
         posB, CartesianIndex(ntuple(zero, N)),
         S(0 for _ in 1:N),
         zero(T), zero(T), zero(T), []

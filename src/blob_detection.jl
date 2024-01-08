@@ -45,7 +45,7 @@ function detect_blobs(img::AbstractArray{T,N}, σscales;
     maxima = findlocalmaxima(img_LoG; edges)
     if !iszero(rthresh)
         imgmax = maximum(abs, img)
-        [refine(Blob(
+        [refine(BlobRaw(
             CartesianIndex(Base.tail(x.I)),
             sigmas[x[1]].*σshape,
             img_LoG[x],
@@ -53,7 +53,7 @@ function detect_blobs(img::AbstractArray{T,N}, σscales;
             )) for x in maxima if img_LoG[x] > rthresh*imgmax
         ]
     else
-        [refine(Blob(
+        [refine(BlobRaw(
             CartesianIndex(Base.tail(x.I)),
             sigmas[x[1]].*σshape,
             img_LoG[x],
