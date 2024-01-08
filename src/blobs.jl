@@ -1,5 +1,9 @@
 export AbstractBlob, Blob, BlobRefined, DummyBlob
 
+"""
+    AbstractBlob{T,S,N}
+Abstract interface for blob types
+"""
 abstract type AbstractBlob{T,S,N} end
 function Base.show(io::IO, blob::AbstractBlob)
     l = location(blob)
@@ -13,6 +17,16 @@ function Base.show(io::IO, blob::AbstractBlob)
 end
 
 
+"""
+    struct Blob{T,S,N} <: AbstractBlob{T,S,N}
+        location::CartesianIndex{N}
+        σ::S
+        amplitude::T
+        m0::T
+        m2::T
+        intensity_map
+    end
+"""
 struct Blob{T,S,N} <: AbstractBlob{T,S,N}
     location::CartesianIndex{N}
     σ::S
