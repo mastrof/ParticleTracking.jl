@@ -2,6 +2,7 @@ export refine, offsets
 
 """
     refine(blob::AbstractBlob)
+Estimate the real location of `blob` through subpixel localization.
 """
 function refine(blob::AbstractBlob)
     ε = offsets(blob)
