@@ -1,5 +1,6 @@
 cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
+push!(LOAD_PATH, "../src/")
 using ParticleTracking
 using Documenter
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
