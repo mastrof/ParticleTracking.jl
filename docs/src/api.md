@@ -43,3 +43,18 @@ The result of the `blobtracking` is a vector of `Trajectory` objects.
 ```@docs
 Trajectory
 ```
+A `Trajectory` contains a vector of blobs and an associated vector
+of time points, which are not necessarily contiguous (in fact, when tracking
+with `memory>1`, we allow a trajectory to contain gaps).
+
+All the functions of the Blob API can be also called on `Trajectory` objects,
+and, they will return a vector with the value of the requested property
+at each step along the trajectory.
+
+A `Trajectory` also supports the following functions
+```@docs
+length
+timestamps
+startpoint
+endpoint
+```
