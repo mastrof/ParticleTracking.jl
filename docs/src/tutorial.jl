@@ -57,7 +57,7 @@ blobs (using a batch of 20 frames to provide some meaningful statistics).
 The values of these moments can be used for further filtering or discrimination.
 =#
 
-## gui_blobs(video) !! not fully implemented yet !!
+# gui_blobs(video) !! not fully implemented yet !!
 
 #=
 After exploring, we can set the desired parameters and actually perform the detection.
