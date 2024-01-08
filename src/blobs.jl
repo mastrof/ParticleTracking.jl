@@ -1,4 +1,4 @@
-export AbstractBlob, Blob, BlobRefined, DummyBlob
+export AbstractBlob, Blob, DummyBlob
 
 """
     AbstractBlob{T,S,N}
@@ -18,7 +18,7 @@ end
 
 
 """
-    struct Blob{T,S,N} <: AbstractBlob{T,S,N}
+    struct BlobRaw{T,S,N} <: AbstractBlob{T,S,N}
         location::CartesianIndex{N}
         σ::S
         amplitude::T
@@ -27,7 +27,7 @@ end
         intensity_map
     end
 """
-struct Blob{T,S,N} <: AbstractBlob{T,S,N}
+struct BlobRaw{T,S,N} <: AbstractBlob{T,S,N}
     location::CartesianIndex{N}
     σ::S
     amplitude::T
@@ -36,15 +36,25 @@ struct Blob{T,S,N} <: AbstractBlob{T,S,N}
     intensity_map
 end
 
-function Blob(
+function BlobRaw(
     location::CartesianIndex{N}, σ::S, amplitude::T, img::AbstractArray{T,N}
 ) where {T,S,N}
     img_pad, m0, m2 = image_moments(location, σ, img)
-    Blob(location, σ, amplitude, m0, m2, img_pad)
+    BlobRaw(location, σ, amplitude, m0, m2, img_pad)
 end
 
-
-struct BlobRefined{T,S,N} <: AbstractBlob{T,S,N}
+"""
+    struct Blob{T,S,N} <: AbstractBlob{T,S,N}
+        location::NTuple{N,Float64}
+        location_raw::CartesianIndex{N}
+        σ::S
+        amplitude::T
+        m0::T
+        m2::T
+        intensity_map
+    end
+"""
+struct Blob{T,S,N} <: AbstractBlob{T,S,N}
     location::NTuple{N,Float64}
     location_raw::CartesianIndex{N}
     σ::S
@@ -54,15 +64,15 @@ struct BlobRefined{T,S,N} <: AbstractBlob{T,S,N}
     intensity_map
 end
 
-function BlobRefined(blob::AbstractBlob{T,S,N}, offsets::NTuple{N,Float64}) where {T,S,N}
+function Blob(blob::AbstractBlob{T,S,N}, offsets::NTuple{N,Float64}) where {T,S,N}
     raw_location = location(blob)
-    BlobRefined(Tuple(raw_location) .+ offsets, raw_location, scale(blob),
+    Blob(Tuple(raw_location) .+ offsets, raw_location, scale(blob),
         amplitude(blob), zeroth_moment(blob), second_moment(blob), intensity_map(blob)
     )
 end
 
 
-function DummyBlob(BlobType::Type{BlobRefined{T,S,N}}) where {T,S,N}
+function DummyBlob(BlobType::Type{Blob{T,S,N}}) where {T,S,N}
     BlobType(
         ntuple(_ -> T(NaN), N),
         CartesianIndex(ntuple(_ -> 0, N)),

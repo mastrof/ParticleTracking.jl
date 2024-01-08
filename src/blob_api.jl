@@ -40,4 +40,4 @@ Return the image of the `blob`.
 """
 intensity_map(blob::AbstractBlob) = blob.intensity_map
 
-location_raw(blob::BlobRefined) = blob.location_raw
+location_raw(blob::Blob) = blob.location_raw

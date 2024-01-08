@@ -6,11 +6,11 @@ Estimate the real location of `blob` through subpixel localization.
 """
 function refine(blob::AbstractBlob)
     ε = offsets(blob)
-    return BlobRefined(blob, ε)
+    return Blob(blob, ε)
 end
-refine(blob::BlobRefined) = blob # do nothing if position is already refined
+refine(blob::Blob) = blob # do nothing if position is already refined
 
-function offsets(blob::Blob{T,S,2}) where {T,S}
+function offsets(blob::BlobRaw{T,S,2}) where {T,S}
     x, y = location(blob).I
     σx, σy = scale(blob)
     m0 = zeroth_moment(blob)
@@ -39,4 +39,4 @@ function offsets(blob::Blob{T,S,2}) where {T,S}
     ==#
     return (εx, εy)
 end
-offsets(blob::BlobRefined{T,S,N}) where {T,S,N} = ntuple(_ -> 0.0, N)
+offsets(blob::Blob{T,S,N}) where {T,S,N} = ntuple(_ -> 0.0, N)
