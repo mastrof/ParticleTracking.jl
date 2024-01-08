@@ -5,7 +5,7 @@ using ParticleTracking
 using Documenter
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
 import Literate
-using GLMakie # to avoid precompilation within scripts
+using CairoMakie # to avoid precompilation within scripts
 
 # compile tutorial to markdown
 Literate.markdown(

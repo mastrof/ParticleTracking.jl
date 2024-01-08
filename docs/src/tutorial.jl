@@ -26,7 +26,7 @@ and then 2 clouds of scattered points, corresponding to objects that are
 actually moving.
 =#
 
-using Downloads, TiffImages, GLMakie
+using Downloads, TiffImages, CairoMakie
 fpath = joinpath(pwd(), "sample_video.tif")
 Downloads.download(
     "https://github.com/mastrof/ParticleTracking.jl/raw/docs/docs/src/sample_video.tif",
