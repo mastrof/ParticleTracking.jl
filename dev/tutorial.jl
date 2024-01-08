@@ -117,8 +117,8 @@ B = @. view(blobs, setdiff(eachindex(blobs), maybe_spurious))
 let t = 1
     fig, ax, = heatmap(video[:,:,t], colormap=:bone)
     ## blobs can be directly plotted in Makie with scatter
-    scatter!(ax, A[t], color=:red, alpha=0.1, markersize=30)
-    scatter!(ax, B[t], color=:green, alpha=0.1, markersize=30)
+    scatter!(ax, A[t], color=:red, alpha=0.3, markersize=30)
+    scatter!(ax, B[t], color=:green, alpha=0.3, markersize=30)
     fig
 end
 
