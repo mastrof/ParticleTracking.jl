@@ -37,8 +37,8 @@ the parameters used for the blob detection: the blob size (i.e. the scale
 used in the LoG filtering) and the amplitude threshold.
 You can also zoom in and move the image around.
 
-On the side, you will also see two scatter plots, showing
-1) the amplitude of each detected blob, and 2) their zeroth (`m₀`
+On the side, you will also see two scatter plots, showing the amplitude
+of each detected blob, and their zeroth (`m₀`)
 and second (`m₂`) intensity moments.
 
 
