@@ -10,21 +10,6 @@ package features and how to use them to get the best tracking results.
 It is already preprocessed.
 For convenience, we want to convert the pixel values to Float16 or Float32
 values, and normalize these values in the range [0,1].
-
-If you have GLMakie installed, the entire dataset, a three-dimensional array,
-can be visualized in the form of a volume plot (`volume(video)`, not shown here)
-where the `x` and `y` axis
-correspond to the two axes of each image, and the vertical `z` axis
-represents time, i.e. the different frames which compose the video.
-With this plot, we should already be able to identify the salient features
-of the dataset: small bright objects moving in the xy plane.
-Our task is to algorithmically select all the points corresponding
-to "real" moving objects, and connect their positions over time.
-
-At a glance, it should be easy to recognize some straight vertical streaks,
-corresponding to objects which are barely moving in the xy plane,
-and then 2 clouds of scattered points, corresponding to objects that are
-actually moving.
 =#
 
 using Downloads, TiffImages, CairoMakie
@@ -39,27 +24,21 @@ video .-= minimum(video)
 video ./= maximum(video)
 
 #=
-Before performing the full detection, we can explore the data
+Before performing the full detection, you can explore the data
 to find the optimal parameters.
 
-An interactive GUI is provided through GLMakie with the `gui_blobs` function.
-In the large main window we see one frame of the video, with the detected blobs
-surrounded by red circles.
-We can manipulate the `size` of the blobs we want to detect and set an
-amplitude `threshold` to filter out spurious low-intensity spots which
-are wrongly detected as objects.
-We can also zoom in and move the image around, as well as check the
-quality of the detection on different frames.
+By loading GLMakie, the `explore_blobs` function is made available.
+When calling `explore_blobs(video)` you will see an interactive window
+where you can move between the different frames of the video and tune
+the parameters used for the blob detection: the blob size (i.e. the scale
+used in the LoG filtering) and the amplitude threshold.
+You can also zoom in and move the image around.
 
-On the side, we see a scatter plot showing the zeroth (`m₀`)
-and second (`m₂`) intensity moments of the detected
-blobs (using a batch of 20 frames to provide some meaningful statistics).
-The values of these moments can be used for further filtering or discrimination.
-=#
+On the side, you will also see two scatter plots, showing
+1) the amplitude of each detected blob, and 2) their zeroth (`m₀`
+and second (`m₂`) intensity moments.
 
-# gui_blobs(video) !! not fully implemented yet !!
 
-#=
 After exploring, we can set the desired parameters and actually perform the detection.
 We will limit the blob sizes between 2 to 4 pixels, and set the intensity
 threshold to 0.05.
