@@ -36,6 +36,50 @@ using Test
         end
     end
 
+    @testset "Cost functions" begin
+        using LinearAlgebra: norm
+        # create two blobs manually to evaluate their linking cost
+        xA, yA = 13.0, 1.0
+        xB, yB = 15.0, 8.0
+        A = Blob(
+            (xA, yA), CartesianIndex(0,0), (0,0),
+            0.0, 0.0, 0.0, []
+        )
+        B = Blob(
+            (xB, yB), CartesianIndex(0,0), (0,0),
+            0.0, 0.0, 0.0, []
+        )
+        c = QuadraticCost(A, B)
+        @test c == norm((xA,yA) .- (xB,yB))
+        c = QuadraticCost(A, B; g0=100, g2=500) # nothing changes since moments are null
+        @test c == norm((xA,yA) .- (xB,yB))
+        p = 1
+        c = PCost(A, B; p)
+        @test c == norm((xA,yA) .- (xB,yB), p)
+        p = 17.0
+        c = PCost(A, B; p)
+        @test c == norm((xA,yA) .- (xB,yB), p)
+        # if moments are not null, they are considered part of the feature vector
+        m0A, m2A = 10.0, 20.0
+        m0B, m2B = 15.0, 19.0
+        A = Blob(
+            (xA, yA), CartesianIndex(0,0), (0,0),
+            0.0, m0A, m2A, []
+        )
+        B = Blob(
+            (xB, yB), CartesianIndex(0,0), (0,0),
+            0.0, m0B, m2B, []
+        )
+        c = QuadraticCost(A, B)
+        @test c == norm((xA,yA,m0A,m2A) .- (xB,yB,m0B,m2B))
+        p = 3.7
+        g0 = 2.0
+        g2 = 4.2
+        weights = (1.0, 1.0, g0, g2)
+        c = PCost(A, B; p, g0, g2)
+        @test c == norm(((xA,yA,m0A,m2A) .- (xB,yB,m0B,m2B)).*weights, p)
+    end
+
     @testset "Blob Tracking" begin
         n = 256
         for D in 2:2
