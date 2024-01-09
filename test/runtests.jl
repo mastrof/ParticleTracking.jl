@@ -104,16 +104,16 @@ using Test
             trajectories = blobtracking(blobs)
             @test length(trajectories) == 1
             traj = first(trajectories)
-            @test length(traj) == nframes-1 # currently last frame is skipped
+            @test length(traj) == nframes
             # verify that trajectory matches the real positions
             @test all([
                 all(isapprox.(location(traj)[i], real_positions[i]; atol=1/2))
-                for i in eachindex(blobs)[1:end-1]
+                for i in eachindex(blobs)
             ])
-            @test timestamps(traj) == 1:nframes-1
+            @test timestamps(traj) == 1:nframes
 
             # test the api
-            tracked_blobs = first.(blobs)[1:end-1]
+            tracked_blobs = first.(blobs)
             @test location(traj) == location.(tracked_blobs)
             @test amplitude(traj) == amplitude.(tracked_blobs)
             @test scale(traj) == scale.(tracked_blobs)
