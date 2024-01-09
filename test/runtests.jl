@@ -11,8 +11,9 @@ using Test
         n = 256
         for D in 2:2
             @testset "D=$D" begin
-                p₀ = Tuple(rand(1:n, D))
                 σ = 7
+                # exclude borders
+                p₀ = Tuple(rand(2σ:n-2σ, D))
                 for noise in [0.1, 0.2, 0.3]
                     # generate noisy background
                     img = rand(ntuple(_ -> n, D)...) .* noise
