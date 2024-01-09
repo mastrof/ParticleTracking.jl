@@ -28,13 +28,12 @@ function blobtracking(blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}};
     @assert maxdist > 0
     links = mincostflow(blobs; memory, cost, maxdist, kwargs...)
     trajectories = buildtraj(blobs, links; minlife)
-    #trajectories = [Trajectory(blobs, c) for c in connections]
 end
 
 function mincostflow(blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}};
     memory::Integer, cost::Function, maxdist::Real, kwargs...
 )
-    times = eachindex(blobs)[1:end-1]
+    times = eachindex(blobs)
     T = eltype(eltype(blobs))
     # precompute max allowed costs for linking
     maxcost = [
