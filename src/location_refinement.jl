@@ -18,6 +18,7 @@ function offsets(blob::BlobRaw{T,S,N}) where {T,S,N}
         ε .+= delta .* I[CartesianIndex(x .+ delta)]
     end
     ε ./= m0
+    #= BUG: iterated calls fail
     if any(abs(d) > 0.5 for d in ε)
         # reassign the dimensions for which ε>1/2
         new_location = CartesianIndex(Tuple(@. x + round(Int, ε)))
@@ -26,6 +27,7 @@ function offsets(blob::BlobRaw{T,S,N}) where {T,S,N}
         )
         offsets(new_blob)
     end
+    =#
     return Tuple(ε)
 end
 offsets(blob::Blob{T,S,N}) where {T,S,N} = ntuple(_ -> 0.0, N)
