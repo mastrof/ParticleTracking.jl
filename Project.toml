@@ -13,9 +13,9 @@ PaddedViews = "5432bcbf-9aad-5242-b902-cca2824c8663"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 
 [compat]
-GeometryBasics = "0.4"
+GeometryBasics = "0.4 - 0.5"
 ImageFiltering = "0.7"
-MakieCore = "0.7"
+MakieCore = "0.7 - 0.9"
 OffsetArrays = "1"
 PaddedViews = "0.5"
 julia = "1"
