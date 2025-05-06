@@ -53,7 +53,7 @@ function evaluate_maxcost(::Type{<:AbstractBlob{T,S,N}},
 end
 
 """
-    QuadraticCost(A, B; g0=1.0, g2=1.0)
+    QuadraticCost(A, B; g0=0, g2=0)
 Evaluate the cost of linking two blobs `A` and `B` using the Euclidean
 (𝐿²) norm.
 
@@ -61,11 +61,11 @@ The cost includes the spatial distance of the two blobs, and the distance
 in their zeroth and second intensity moments.
 
 **Keywords**
-- `g0::Real = 1.0`: weight factor for the zeroth moment
-- `g2::Real = 1.0`: weight factor for the second moment
+- `g0::Real = 0`: weight factor for the zeroth moment
+- `g2::Real = 0`: weight factor for the second moment
 """
 function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
-    g0::Real = 1.0, g2::Real = 1.0
+    g0::Real = zero(g0), g2::Real = zero(g2)
 )
     dx = location(B) .- location(A)
     dm0 = g0*(zeroth_moment(B) - zeroth_moment(A))
@@ -74,7 +74,7 @@ function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
 end
 
 """
-    PCost(A, B; p=1, g0=1.0, g2=1.0)
+    PCost(A, B; p=1, g0=0, g2=0)
 Evaluate the cost of linking two blobs `A` and `B` using the 𝐿ᵖ norm.
 
 The cost includes the spatial distance of the two blobs, and the distance
@@ -84,11 +84,11 @@ in their zeroth and second intensity moments.
 - `p::Real = 1`: the norm exponent; `p=1` corresponds to the Manhattan metric,
   `p=Inf` to the Chebyshev metric, and `p=2` to the Euclidean metric
   (in which case `QuadraticCost` provides slightly better performance)
-- `g0::Real = 1.0`: weight factor for the zeroth moment
-- `g2::Real = 1.0`: weight factor for the second moment
+- `g0::Real = 0`: weight factor for the zeroth moment
+- `g2::Real = 0`: weight factor for the second moment
 """
 function PCost(A::AbstractBlob, B::AbstractBlob;
-    p::Real = 1, g0::Real = 1.0, g2::Real = 1.0
+    p::Real = 1, g0::Real = zero(g0), g2::Real = zero(g2)
 )
     dx = abs.(location(B) .- location(A))
     dm0 = g0*abs(zeroth_moment(B) - zeroth_moment(A))
