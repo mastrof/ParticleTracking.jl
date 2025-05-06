@@ -65,7 +65,7 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
-    g0::Real = zero(g0), g2::Real = zero(g2)
+    g0::Real = 0.0, g2::Real = 0.0
 )
     dx = location(B) .- location(A)
     dm0 = g0*(zeroth_moment(B) - zeroth_moment(A))
@@ -88,7 +88,7 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function PCost(A::AbstractBlob, B::AbstractBlob;
-    p::Real = 1, g0::Real = zero(g0), g2::Real = zero(g2)
+    p::Real = 1, g0::Real = 0.0, g2::Real = 0.0
 )
     dx = abs.(location(B) .- location(A))
     dm0 = g0*abs(zeroth_moment(B) - zeroth_moment(A))
