@@ -75,8 +75,13 @@ using Test
             (xB, yB), CartesianIndex(0,0), (0,0),
             0.0, m0B, m2B, []
         )
-        c = QuadraticCost(A, B)
-        @test c == norm((xA,yA,m0A,m2A) .- (xB,yB,m0B,m2B))
+        c = QuadraticCost(A, B) # by default moments have 0 weight
+        @test c == norm((xA,yA) .- (xB,yB))
+        g0 = 1.0
+        g2 = 4.0
+        weights = (1.0, 1.0, g0, g2)
+        c = QuadraticCost(A, B; g0, g2)
+        @test c == norm(((xA,yA,m0A,m2A) .- (xB,yB,m0B,m2B)).*weights)
         p = 3.7
         g0 = 2.0
         g2 = 4.2
