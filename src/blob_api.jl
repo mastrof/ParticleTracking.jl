@@ -23,7 +23,7 @@ amplitude(blob::AbstractBlob) = blob.amplitude
     radius(blob)
 Return the equivalent spherical radius of the `blob`.
 """
-radius(blob::AbstractBlob{T,S,N}) where {T,S,N} = sqrt(sum(abs2.(scale(blob))))
+GeometryBasics.radius(blob::AbstractBlob) = sqrt(sum(abs2.(scale(blob))))
 """
     zeroth_moment(blob)
 Return the zeroth intensity moment of the `blob` image.

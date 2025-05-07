@@ -3,7 +3,8 @@ module ParticleTracking
 using OffsetArrays
 using ImageFiltering
 using PaddedViews
-using MakieCore, GeometryBasics
+using MakieCore
+using GeometryBasics
 
 
 #== Type interface ==#
