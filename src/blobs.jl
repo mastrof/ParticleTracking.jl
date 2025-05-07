@@ -53,7 +53,9 @@ end
 """
 @kwdef struct Blob{T,N} <: AbstractBlob{T,N}
     location::NTuple{N,Float64}
-    location_raw::CartesianIndex{N} = CartesianIndex(round.(Int, location))
+    location_raw::CartesianIndex{N} = CartesianIndex(
+        any(isnan, location) ? ntuple(zero, N) : round.(Int, location)
+    )
     σ::NTuple{N,<:Number} = ntuple(zero, N)
     amplitude::T = zero(T)
     m0::T = zero(T)
