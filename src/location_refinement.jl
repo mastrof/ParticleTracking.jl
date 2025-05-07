@@ -8,7 +8,7 @@ function refine(blob::AbstractBlob)
 end
 refine(blob::Blob) = blob # do nothing if position is already refined
 
-function offsets(blob::BlobRaw{T,S,N}) where {T,S,N}
+function offsets(blob::BlobRaw{T,N}) where {T,N}
     m0 = zeroth_moment(blob)
     I = intensity_map(blob)
     x = location(blob).I
@@ -30,4 +30,4 @@ function offsets(blob::BlobRaw{T,S,N}) where {T,S,N}
     =#
     return Tuple(ε)
 end
-offsets(blob::Blob{T,S,N}) where {T,S,N} = ntuple(_ -> 0.0, N)
+offsets(blob::Blob{T,N}) where {T,N} = ntuple(_ -> 0.0, N)

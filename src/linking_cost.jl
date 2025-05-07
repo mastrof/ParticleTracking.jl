@@ -34,21 +34,15 @@ end
 Evaluate the maximum allowed cost for a link if the maximum allowed
 distance is `maxdist` pixels and the time difference `dt` frames.
 """
-function evaluate_maxcost(::Type{<:AbstractBlob{T,S,N}},
+function evaluate_maxcost(::Type{<:AbstractBlob{T,N}},
     maxdist::Real, dt::Integer, cost::Function; kwargs...
-) where {T,S,N}
-    # define two dummy blobs dt*maxdist apart and evaluate their linking cost
-    posA = ntuple(_ -> 0.0, N)
-    posB = ntuple(i -> i==1 ? Float64(dt*maxdist) : 0.0, N)
-    A = Blob(
-        posA, CartesianIndex(ntuple(zero, N)),
-        S(0 for _ in 1:N), zero(T), zero(T), zero(T), []
-    )
-    B = Blob(
-        posB, CartesianIndex(ntuple(zero, N)),
-        S(0 for _ in 1:N),
-        zero(T), zero(T), zero(T), []
-    )
+) where {T,N}
+    # define two dummy blobs dt*maxdist apart
+    # and evaluate their linking cost
+    posA = ntuple(_ -> float(0), N)
+    posB = ntuple(i -> i==1 ? float(dt*maxdist) : float(0), N)
+    A = Blob(; location=posA)
+    B = Blob(; location=posB)
     return cost(A, B; kwargs...)
 end
 
@@ -65,7 +59,7 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
-    g0::Real = 0.0, g2::Real = 0.0
+    g0::Real=0.0, g2::Real=0.0
 )
     dx = location(B) .- location(A)
     dm0 = g0*(zeroth_moment(B) - zeroth_moment(A))
@@ -88,7 +82,7 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function PCost(A::AbstractBlob, B::AbstractBlob;
-    p::Real = 1, g0::Real = 0.0, g2::Real = 0.0
+    p::Real=1, g0::Real=0.0, g2::Real=0.0
 )
     dx = abs.(location(B) .- location(A))
     dm0 = g0*abs(zeroth_moment(B) - zeroth_moment(A))
