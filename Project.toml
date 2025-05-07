@@ -1,7 +1,7 @@
 name = "ParticleTracking"
 uuid = "682643da-b995-4346-8c6a-9b654bba8793"
 authors = ["Riccardo Foffi <rfoffi@ethz.ch> and contributors"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
