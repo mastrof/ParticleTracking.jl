@@ -72,16 +72,3 @@ function Blob(
         amplitude(blob), zeroth_moment(blob), second_moment(blob), intensity_map(blob)
     )
 end
-
-
-function DummyBlob(BlobType::Type{Blob{T,N}}) where {T,N}
-    BlobType(
-        ntuple(_ -> T(NaN), N),
-        CartesianIndex(ntuple(_ -> 0, N)),
-        ntuple(_ -> 0, N),
-        zero(T),
-        zero(T),
-        zero(T),
-        []
-    )
-end

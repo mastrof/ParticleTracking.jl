@@ -21,7 +21,7 @@ function MakieCore.convert_arguments(
     t::Integer,
     t0::Integer
 )
-    (Point2f.(location.(x[max(1,t-t0):t])),)
+    (Point2f.(location.(x.(max(1,t-t0):t))),)
 end
 # draw entire trajectory
 MakieCore.convert_arguments(P::Type{<:Lines}, x::Trajectory) =

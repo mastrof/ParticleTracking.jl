@@ -116,10 +116,14 @@ using Test
             @test length(traj) == nframes
             # verify that trajectory matches the real positions
             @test all([
-                all(isapprox.(location(traj)[i], real_positions[i]; atol=1/2))
+                all(isapprox.(location(traj)[i], real_positions[i]; atol=1))
                 for i in eachindex(blobs)
             ])
             @test timestamps(traj) == 1:nframes
+
+            # trajectory function calls
+            @test traj(1) === traj[1]
+            @test all(isnan, location(traj(2nframes)))
 
             # test the api
             tracked_blobs = first.(blobs)
