@@ -34,15 +34,16 @@ end
 Evaluate the maximum allowed cost for a link if the maximum allowed
 distance is `maxdist` pixels and the time difference `dt` frames.
 """
-function evaluate_maxcost(::Type{<:AbstractBlob{T,N}},
+function evaluate_maxcost(B::Type{<:AbstractBlob{T,N}},
     maxdist::Real, dt::Integer, cost::Function; kwargs...
 ) where {T,N}
     # define two dummy blobs dt*maxdist apart
     # and evaluate their linking cost
+    D = get(kwargs, :maxgap, dt*maxdist)
     posA = ntuple(_ -> float(0), N)
-    posB = ntuple(i -> i==1 ? float(dt*maxdist) : float(0), N)
-    A = Blob(; location=posA)
-    B = Blob(; location=posB)
+    posB = ntuple(i -> i==1 ? float(D) : float(0), N)
+    A = B(; location=posA)
+    B = B(; location=posB)
     return cost(A, B; kwargs...)
 end
 
