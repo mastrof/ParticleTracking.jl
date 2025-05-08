@@ -30,17 +30,18 @@ function evaluate_costs!(C::OffsetMatrix,
 end
 
 """
-    evaluate_maxcost(T, maxdist, dt, cost; kwargs...)
+    evaluate_maxcost(T, maxdist, dt, cost; maxgap, kwargs...)
 Evaluate the maximum allowed cost for a link if the maximum allowed
 distance is `maxdist` pixels and the time difference `dt` frames.
 """
 function evaluate_maxcost(B::Type{<:AbstractBlob{T,N}},
-    maxdist::Real, dt::Integer, cost::Function; kwargs...
+    maxdist::Real, dt::Integer, cost::Function;
+    maxgap=dt*maxdist, kwargs...
 ) where {T,N}
     # define two dummy blobs dt*maxdist apart
     # and evaluate their linking cost
-    D = get(kwargs, :maxgap, dt*maxdist)
     posA = ntuple(_ -> float(0), N)
+    D = dt > 1 ? maxgap : maxdist
     posB = ntuple(i -> i==1 ? float(D) : float(0), N)
     A = B(; location=posA)
     B = B(; location=posB)
@@ -60,7 +61,8 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function QuadraticCost(A::AbstractBlob, B::AbstractBlob;
-    g0::Real=0.0, g2::Real=0.0
+    g0::Real=0.0, g2::Real=0.0,
+    kwargs... # HACK: to allow arbitrary kwargs to blobtracking
 )
     dx = location(B) .- location(A)
     dm0 = g0*(zeroth_moment(B) - zeroth_moment(A))
@@ -83,7 +85,8 @@ in their zeroth and second intensity moments.
 - `g2::Real = 0`: weight factor for the second moment
 """
 function PCost(A::AbstractBlob, B::AbstractBlob;
-    p::Real=1, g0::Real=0.0, g2::Real=0.0
+    p::Real=1, g0::Real=0.0, g2::Real=0.0,
+    kwargs... # HACK: to allow arbitrary kwargs to blobtracking
 )
     dx = abs.(location(B) .- location(A))
     dm0 = g0*abs(zeroth_moment(B) - zeroth_moment(A))

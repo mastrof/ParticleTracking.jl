@@ -82,6 +82,7 @@ function initialize_links!(G::OffsetMatrix, C::OffsetMatrix,
     js_occupied = zero(axes(G, 2))
     # initial guesses for min cost links
     for i in axes(G,1)[1:end]
+        # TODO: add check to avoid throwing errors when empty
         c, j = findmin(C[i,j] for j in axes(G,2)[1:end])
         if js_occupied[j] == 0 && !isinf(C[i,j])
             G[i,j] = 1
