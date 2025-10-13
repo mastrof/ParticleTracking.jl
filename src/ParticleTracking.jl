@@ -3,7 +3,6 @@ module ParticleTracking
 using OffsetArrays
 using ImageFiltering
 using PaddedViews
-using MakieCore
 using GeometryBasics
 
 
@@ -25,10 +24,14 @@ include("linking_cost.jl")
 include("flow_linking.jl")
 
 #== Visualization ==#
-include("makie_recipes.jl")
-using Requires
-function __init__()
-    @require GLMakie="e9467ef8-e4e7-5192-8a1a-b1aee30e663a" include("gui_blobs.jl")
-end
+export explore_blobs
+"""
+    explore_blobs(video; kwargs...)
+Open a window with an interactive preview of the blob detection on `video`.
+The UI allows to move through all the frames of the `video` while tuning
+the blob scale and amplitude threshold for detection.
+**Only available upon loading GLMakie**.
+"""
+function explore_blobs end
 
 end

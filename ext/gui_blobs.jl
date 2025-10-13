@@ -1,21 +1,8 @@
-export explore_blobs
-
-using .GLMakie
-
-"""
-    explore_blobs(video; kwargs...)
-Start a GLMakie window with an interactive preview of the blob detection
-on `video`.
-The UI allows to move through all the frames of the `video` while tuning
-the blob scale and amplitude threshold for detection.
-"""
-function explore_blobs end
-
-function explore_blobs(video::AbstractArray{T,3}; kwargs...) where T
+function ParticleTracking.explore_blobs(video::AbstractArray{T,3}; kwargs...) where T
     explore_blobs(eachslice(video; dims=3); kwargs...)
 end
 
-function explore_blobs(
+function ParticleTracking.explore_blobs(
     video::AbstractVector{<:AbstractMatrix},
     size_range = 1:20, size_startvalue = 1,
     thresh_range = 0.01:0.005:0.15, thresh_startvalue = 0.04,

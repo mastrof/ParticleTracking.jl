@@ -1,24 +1,32 @@
 name = "ParticleTracking"
 uuid = "682643da-b995-4346-8c6a-9b654bba8793"
 authors = ["Riccardo Foffi <rfoffi@ethz.ch> and contributors"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 PaddedViews = "5432bcbf-9aad-5242-b902-cca2824c8663"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 
+[weakdeps]
+Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+
+[extensions]
+GLMakieExt = "GLMakie"
+MakieExt = "Makie"
+
 [compat]
+GLMakie = "0.13"
 GeometryBasics = "0.4 - 0.5"
 ImageFiltering = "0.7"
-MakieCore = "0.7 - 0.9"
+Makie = "0.24"
 OffsetArrays = "1"
 PaddedViews = "0.5"
-julia = "1"
+julia = "1.10, 1.11"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
