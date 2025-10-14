@@ -6,6 +6,15 @@ function Makie.convert_arguments(
     (Point2f.(location.(x)),)
 end
 
+# draw blobs as circles
+function Makie.convert_arguments(
+    P::Type{<:Poly},
+    x::AbstractVector{<:AbstractBlob},
+    r::Union{<:Real,<:AbstractVector{<:AbstractBlob}}=1
+)
+    (Circle.(Point2f.(location.(x)), r),)
+end
+
 # draw a sequence of blobs as a trajectory
 function Makie.convert_arguments(
     P::Type{<:Lines},
