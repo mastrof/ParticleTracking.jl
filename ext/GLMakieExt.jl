@@ -5,5 +5,6 @@ using GLMakie
 
 include("makie_recipes.jl")
 include("gui_blobs.jl")
+include("gui_tracks.jl")
 
 end

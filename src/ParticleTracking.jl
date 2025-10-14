@@ -24,7 +24,8 @@ include("linking_cost.jl")
 include("flow_linking.jl")
 
 #== Visualization ==#
-export explore_blobs
+export explore_blobs, explore_tracking
+
 """
     explore_blobs(video; kwargs...)
 Open a window with an interactive preview of the blob detection on `video`.
@@ -33,5 +34,12 @@ the blob scale and amplitude threshold for detection.
 **Only available upon loading GLMakie**.
 """
 function explore_blobs end
+
+"""
+    explore_tracking(video, blobs; kwargs...)
+Open a window with an interactive preview of the tracking on `video` based
+on the detected `blobs`.
+"""
+function explore_tracking end
 
 end
