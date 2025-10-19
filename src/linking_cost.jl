@@ -11,13 +11,17 @@ function evaluate_costs!(C::OffsetMatrix,
     from::AbstractVector{T},
     to::AbstractVector{T},
     dt::Integer,
-    cost::Function,
-    maxcost::Real;
+    cost,
+    maxcost::Real,
+    t::Integer,
+    from_indices::AbstractVector{<:Integer};
     kwargs...
 ) where {T<:AbstractBlob}
     for j in axes(C,2), i in axes(C,1)
         if i != 0 && j != 0
-            C[i,j] = cost(from[i], to[j]; kwargs...)
+            global_from_idx = from_indices[i]
+            from_node = (t, global_from_idx)
+            C[i,j] = cost(from[i], to[j], from_node, dt; kwargs...)
             # costs larger than those for creation/annihilation
             # are set to Inf to improve performance
             if C[i,j] > maxcost
@@ -35,7 +39,7 @@ Evaluate the maximum allowed cost for a link if the maximum allowed
 distance is `maxdist` pixels and the time difference `dt` frames.
 """
 function evaluate_maxcost(B::Type{<:AbstractBlob{T,N}},
-    maxdist::Real, dt::Integer, cost::Function;
+    maxdist::Real, dt::Real, cost::Function;
     maxgap=dt*maxdist, kwargs...
 ) where {T,N}
     # define two dummy blobs dt*maxdist apart

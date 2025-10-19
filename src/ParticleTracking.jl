@@ -1,6 +1,8 @@
 module ParticleTracking
 
 using OffsetArrays
+using DataFrames
+using Graphs
 using ImageFiltering
 using PaddedViews
 using GeometryBasics
@@ -18,10 +20,11 @@ include("blob_detection.jl")
 include("location_refinement.jl")
 
 #== Tracking ==#
-#include("linking.jl")
 using LinearAlgebra: norm, dot
 include("linking_cost.jl")
-include("flow_linking.jl")
+include("prediction.jl")
+include("linking.jl")
+include("tracking.jl")
 
 #== Visualization ==#
 export explore_blobs, explore_tracking

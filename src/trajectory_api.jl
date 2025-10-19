@@ -24,7 +24,7 @@ Return the time at which the `trajectory` ended.
 """
 endpoint(traj::Trajectory) = location(last(traj.blobs))
 
-for f in (location, amplitude, scale, radius, zeroth_moment, second_moment, intensity_map)
+for f in (location, amplitude, scale, zeroth_moment, second_moment, intensity_map)
     m = parentmodule(f)
     fs = nameof(f)
     @eval function $m.$fs(traj::Trajectory, args...)

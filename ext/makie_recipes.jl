@@ -35,3 +35,19 @@ end
 # draw entire trajectory
 Makie.convert_arguments(P::Type{<:Lines}, x::Trajectory) =
     (Point2f.(location(x)),)
+
+# draw a collection of trajectories
+function Makie.convert_arguments(
+    P::Type{<:Series},
+    x::AbstractVector{<:Trajectory},
+    t::Integer,
+    t0::Integer
+)
+    ([Point2f.(location.(y.(max(1,t-t0):t))) for y in x], )
+end
+function Makie.convert_arguments(
+    P::Type{<:Series},
+    x::AbstractVector{<:Trajectory},
+)
+    ([Point2f.(location.(y)) for y in x], )
+end
