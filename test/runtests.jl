@@ -6,7 +6,7 @@ using Test
     function gaussian_blob(p, p₀, σ)
         exp(-sum(abs2.(p .- p₀)) / (2*σ^2))
     end
-    
+
     @testset "Blob detection" begin
         for D in 2:3
             n = D == 2 ? 256 : 128 # low res in 3D or it gets too expensive
@@ -110,7 +110,7 @@ using Test
             blobs = map(frame -> detect_blobs(frame, σ-1:σ+1; rthresh=noise), video)
             @test length(blobs) == nframes
             @test length.(blobs) == ones(Int, nframes)
-            trajectories = blobtracking(blobs)
+            trajectories = track_blobs(blobs)
             @test length(trajectories) == 1
             traj = first(trajectories)
             @test length(traj) == nframes
@@ -130,10 +130,87 @@ using Test
             @test location(traj) == location.(tracked_blobs)
             @test amplitude(traj) == amplitude.(tracked_blobs)
             @test scale(traj) == scale.(tracked_blobs)
-            @test radius(traj) == radius.(tracked_blobs)
             @test zeroth_moment(traj) == zeroth_moment.(tracked_blobs)
             @test second_moment(traj) == second_moment.(tracked_blobs)
             @test intensity_map(traj) == intensity_map.(tracked_blobs)
         end
+    end
+
+    @testset "Prediction" begin
+        n = 64
+        D = 2
+        # two blobs crossing path at frame 11
+        v = (3.0, 0.0)
+        p1 = (2.0, 32.0)
+        p2 = (60.0, 32.0)
+        nframes = 18
+        realtrack_1 = [(@. p1 + v*dt) for dt in 0:nframes-1]
+        realtrack_2 = [(@. p2 - v*dt) for dt in 0:nframes-1]
+        video = [zeros(Float32, n, n) for _ in 1:nframes]
+        for t in 1:nframes
+            for p in CartesianIndices(video[t])
+                video[t][p] += gaussian_blob(p.I, realtrack_1[t], 0.5)
+                video[t][p] += gaussian_blob(p.I, realtrack_2[t], 0.5)
+            end
+        end
+        blobs = [detect_blobs(img, 1:2; rthresh=0.1) for img in video]
+        @assert all(==(2), length.(blobs))
+        trajectories_raw = track_blobs(blobs; maxdist=5, w=0, k=0)
+        trajectories_prd = track_blobs(blobs; maxdist=5, w=0.5, k=3)
+        # raw linking uses only spatial information
+        # therefore on crossing it will swap the two blobs
+        raw1 = map(p -> round.(location(p); digits=0), trajectories_raw[2])
+        raw2 = map(p -> round.(location(p); digits=0), trajectories_raw[1])
+        @test raw1 == [realtrack_1[1:10]; realtrack_2[11:end]]
+        @test raw2 == [realtrack_2[1:10]; realtrack_1[11:end]]
+        # with velocity prediction there is no swapping
+        prd1 = map(p -> round.(location(p); digits=0), trajectories_prd[2])
+        prd2 = map(p -> round.(location(p); digits=0), trajectories_prd[1])
+        @test prd1 == realtrack_1
+        @test prd2 == realtrack_2
+        # prediction still works if the crossing frame is deleted
+        fill!(video[11], 0)
+        blobs = [detect_blobs(img, 1:2; rthresh=0.1) for img in video]
+        trajectories_raw = track_blobs(blobs; maxdist=5, w=0, k=0)
+        raw1 = map(p -> round.(location(p); digits=0), trajectories_raw[2])
+        raw2 = map(p -> round.(location(p); digits=0), trajectories_raw[1])
+        @test raw1 == [realtrack_1[1:10]; realtrack_2[12:end]]
+        @test raw2 == [realtrack_2[1:10]; realtrack_1[12:end]]
+        trajectories_prd = track_blobs(blobs; maxdist=5, memory=1, w=0.5, k=3)
+        prd1 = map(p -> round.(location(p); digits=0), trajectories_prd[2])
+        prd2 = map(p -> round.(location(p); digits=0), trajectories_prd[1])
+        @test prd1 == realtrack_1[[1:10; 12:end]]
+        @test prd2 == realtrack_2[[1:10; 12:end]]
+    end
+
+    @testset "Trackpy import" begin
+        # generate a trackpy-like dataframe
+        using DataFrames
+        nframes = 7
+        nblobs = [rand(4:8) for _ in 1:nframes]
+        frame = [fill(t, nblobs[t]) for t in 1:nframes]
+        x = [rand(nblobs[t]) for t in 1:nframes]
+        y = [rand(nblobs[t]) for t in 1:nframes]
+        mass = [rand(nblobs[t]) for t in 1:nframes]
+        signal = [rand(nblobs[t]) for t in 1:nframes]
+        size = [rand(1:2, nblobs[t]) for t in 1:nframes]
+        ecc = [rand(-1:0.1:1, nblobs[t]) for t in 1:nframes]
+        df = vcat([
+            DataFrame(;
+                frame=frame[t],
+                x=x[t],
+                y=y[t],
+                mass=mass[t],
+                signal=signal[t],
+                size=size[t],
+                ecc=ecc[t],
+            )
+            for t in 1:nframes
+        ]...)
+        blobs = trackpydf_to_blobs(df)
+        @test first.(location.(vcat(blobs...))) == vcat(x...)
+        @test last.(location.(vcat(blobs...))) == vcat(y...)
+        @test amplitude.(vcat(blobs...)) == vcat(signal...)
+        @test zeroth_moment.(vcat(blobs...)) == vcat(mass...)
     end
 end
