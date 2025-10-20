@@ -122,9 +122,13 @@ one.
 
 let t=1, I_A=intensity_map(A[t][1]), j=1, I_B=intensity_map(B[t][j])
     M = max(maximum(I_A), maximum(I_B))
-    fig, ax1 = heatmap(I_A; colorrange=(0,M), axis=(title="Spurious",))
+    xA, yA = collect.(axes(I_A))
+    zA = parent(I_A)
+    fig, ax1 = heatmap(xA, yA, zA; colorrange=(0,M), axis=(title="Spurious",))
     ax2 = Axis(fig[1,2], title="Real")
-    heatmap!(ax2, I_B; colorrange=(0,M))
+    xB, yB = collect.(axes(I_B))
+    zB = parent(I_B)
+    heatmap!(ax2, xB, yB, zB; colorrange=(0,M))
     fig
 end
 

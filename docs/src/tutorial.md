@@ -125,24 +125,28 @@ one.
 ````@example tutorial
 let t=1, I_A=intensity_map(A[t][1]), j=1, I_B=intensity_map(B[t][j])
     M = max(maximum(I_A), maximum(I_B))
-    fig, ax1 = heatmap(I_A; colorrange=(0,M), axis=(title="Spurious",))
+    xA, yA = collect.(axes(I_A))
+    zA = parent(I_A)
+    fig, ax1 = heatmap(xA, yA, zA; colorrange=(0,M), axis=(title="Spurious",))
     ax2 = Axis(fig[1,2], title="Real")
-    heatmap!(ax2, I_B; colorrange=(0,M))
+    xB, yB = collect.(axes(I_B))
+    zB = parent(I_B)
+    heatmap!(ax2, xB, yB, zB; colorrange=(0,M))
     fig
 end
 ````
 
 Now we can safely filter out the spurious detections and move on to the tracking
-using the `blobtracking` function.
+using the `track_blobs` function.
 
 In principle, we don't need to do anything special and we can just call
-`blobtracking(blobs)`, but we will see the results are much less than optimal.
+`track_blobs(blobs)`, but we will see the results are much less than optimal.
 
 ````@example tutorial
 # reassign blobs to the subpopulation without spurious detections
 blobs = deepcopy(B)
 # do the tracking
-trajectories = blobtracking(blobs)
+trajectories = track_blobs(blobs)
 # visualize plotting trajectories one by one
 let
     fig = Figure()
@@ -169,7 +173,7 @@ this limit to 60 pixels
 
 ````@example tutorial
 maxdist = 60
-trajectories = blobtracking(blobs; maxdist)
+trajectories = track_blobs(blobs; maxdist)
 let
     fig = Figure()
     ax = Axis(fig[1,1])
@@ -214,7 +218,7 @@ the objects are allowed to travel `maxdist` *every frame*, therefore large
 ````@example tutorial
 maxdist = 60
 memory = 5
-trajectories = blobtracking(blobs; maxdist, memory)
+trajectories = track_blobs(blobs; maxdist, memory)
 let
     fig = Figure()
     ax = Axis(fig[1,1])
@@ -230,6 +234,12 @@ has been extended; the three nearby blue, green, light-blue segments now constit
 a single, longer trajectory; the two orange and pink trajectories at the top
 are now joined into a single one; the brownian trajectories on the left
 have not been modified since they were already optimal.
+
+The `track_blobs` function has various additional parameters that can be
+tuned to optimize the outcome.
+
+All of them can be explored through an interactive GUI (available via GLMakie)
+called by `explore_tracking(video, blobs; kwargs...)`.
 
 ---
 
