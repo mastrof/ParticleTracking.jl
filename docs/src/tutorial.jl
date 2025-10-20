@@ -224,12 +224,6 @@ let
 end
 
 #=
-Compared to the previous memoryless trial, the pink trajectory in the bottom
-has been extended; the three nearby blue, green, light-blue segments now constitute
-a single, longer trajectory; the two orange and pink trajectories at the top
-are now joined into a single one; the brownian trajectories on the left
-have not been modified since they were already optimal.
-
 The `track_blobs` function has various additional parameters that can be
 tuned to optimize the outcome.
 

@@ -15,9 +15,9 @@ associated minimum-cost flow problem.
 - `maxdist::Real`: maximum distance that a blob is allowed to travel in a single frame; defaults to Inf
 - `gapscale::Function`: scaling function to reweight allowed distance over detection gaps, i.e.,
   the maxdist over n frames is maxdist * gapscale(n); defaults to sqrt.
-- `k::Integer`: lookback window for velocity prediction; defaults to 3, 0 means no prediction
+- `k::Integer`: lookback window for velocity prediction; defaults to 0 (no prediction)
 - `w::Real`: weight (must be within [0,1]) assigned to velocity prediction wrt spatial linking;
-  defaults to 0.5.
+  defaults to 0.
 
 Other arbitrary kwargs can be provided, they will be passed directly to the `cost` function.
 """
@@ -28,8 +28,8 @@ function track_blobs(
     cost::Function = QuadraticCost,
     maxdist::Real = Inf,
     gapscale::Function = sqrt,
-    k::Integer = 3,
-    w::Real = 0.5,
+    k::Integer = 0,
+    w::Real = 0.0,
     kwargs...
 )
     @assert minlife >= 1
