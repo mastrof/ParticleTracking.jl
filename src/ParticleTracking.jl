@@ -26,6 +26,9 @@ include("prediction.jl")
 include("linking.jl")
 include("tracking.jl")
 
+#== trackpy ==#
+include("trackpy.jl")
+
 #== Visualization ==#
 export explore_blobs, explore_tracking
 
