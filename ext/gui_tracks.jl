@@ -1,5 +1,10 @@
 isnantuple(t::Tuple) = any(isnan, t)
 
+function in_roi(blob, x1, x2, y1, y2)
+    x, y = location(blob)
+    (x1 <= x <= x2) && (y1 <= y <= y2)
+end
+
 function ParticleTracking.explore_tracking(
     video::AbstractArray{T,3},
     blobs::AbstractVector{<:AbstractVector{<:AbstractBlob}};
@@ -32,7 +37,7 @@ function ParticleTracking.explore_tracking(
         :k_startvalue => 1,
         # figure
         :size => (1200, 900),
-        :fontsize => 28,
+        :fontsize => 20,
         :fps => 20,
         # blobs
         :blobradius => 4,
@@ -49,58 +54,97 @@ function ParticleTracking.explore_tracking(
     # initialize
     fig = Figure(; size=p[:size], fontsize=p[:fontsize])
     # controls on bottom
-    slider_maxdist = Slider(fig[4,1:4], range=p[:maxdist_range], startvalue=p[:maxdist_startvalue])
-    slider_memory = Slider(fig[5,1:4], range=p[:memory_range], startvalue=p[:memory_startvalue])
-    slider_minlife = Slider(fig[6,1:4], range=p[:minlife_range], startvalue=p[:minlife_startvalue])
-    slider_w = Slider(fig[7,1:4], range=p[:w_range], startvalue=p[:w_startvalue])
-    slider_k = Slider(fig[8,1:4], range=p[:k_range], startvalue=p[:k_startvalue])
-    label_maxdist = Label(fig[4,5];
-        text=@lift("maxdist: "*string($(slider_maxdist.value))),
-        halign=:left
+    variables_bottom = ["maxdist", "memory", "minlife", "w", "k"]
+    sliders_bottom = Dict(
+        variables_bottom .=> map(enumerate(variables_bottom)) do (i, lab)
+            var_range = p[Symbol("$(lab)_range")]
+            var_start = p[Symbol("$(lab)_startvalue")]
+            Slider(fig[3+i,1:4];
+                range=var_range, startvalue=var_start,
+                # update_while_dragging=false,
+            )
+        end
     )
-    label_memory = Label(fig[5,5];
-        text=@lift("memory: "*string($(slider_memory.value))),
-        halign=:left
-    )
-    label_minlife = Label(fig[6,5];
-        text=@lift("minlife: "*string($(slider_minlife.value))),
-        halign=:left
-    )
-    label_w = Label(fig[7,5];
-        text=@lift("pred weight: "*string($(slider_w.value))),
-        halign=:left
-    )
-    label_w = Label(fig[8,5];
-        text=@lift("pred span: "*string($(slider_k.value))),
-        halign=:left
-    )
+    labels_bottom = map(enumerate(variables_bottom)) do (i, lab)
+        Label(fig[3+i,5];
+            text=@lift("$lab: " * string($(sliders_bottom[lab].value))),
+            halign=:left
+        )
+    end
     # controls on right
-    slider_g0 = Slider(fig[2,4], range=p[:g0_range], startvalue=p[:g0_startvalue])
-    slider_g2 = Slider(fig[3,4], range=p[:g2_range], startvalue=p[:g2_startvalue])
-    label_g0 = Label(fig[2,5];
-        text=@lift("g0: "*string($(slider_g0.value))),
-        halign=:left
+    variables_right = ["g0", "g2"]
+    sliders_right = Dict(
+        variables_right .=> map(enumerate(variables_right)) do (i, lab)
+            var_range = p[Symbol("$(lab)_range")]
+            var_start = p[Symbol("$(lab)_startvalue")]
+            Slider(fig[1+i,4];
+                range=var_range, startvalue=var_start,
+                # update_while_dragging=false,
+            )
+        end
     )
-    label_g2 = Label(fig[3,5];
-        text=@lift("g2: "*string($(slider_g2.value))),
-        halign=:left
+    labels_right = Dict(
+        variables_right .=> map(enumerate(variables_right)) do (i, lab)
+            Label(fig[1+i,5];
+                text=@lift("$lab: " * string($(sliders_right[lab].value))),
+                halign=:left
+            )
+        end
     )
     # video, blobs, trajectories
+    gl = GridLayout(fig[1:3,1:3])
     t = Observable(1)
-    ax1 = Axis(fig[1:3, 1:3];
+    ax1 = Axis(gl[1,1];
         aspect=1,
-        title="Tracking preview",
         xticksvisible=false,
         yticksvisible=false,
         xticklabelsvisible=false,
         yticklabelsvisible=false,
     )
     img = @lift(video[$t])
-    B = @lift(blobs[$t])
+    Nx = size(img[], 2)
+    Ny = size(img[], 1)
+    xlims!(ax1, 1, Nx)
+    ylims!(ax1, 1, Ny)
+    # ROI sliders
+    roi_x = IntervalSlider(gl[2,1];#fig[3,1:3];
+        range=(axes(img[], 2).-1)./Nx,
+        startvalues=(0.25, 0.75),
+        valign=:bottom,
+    )
+    roi_y = IntervalSlider(gl[1,2];#fig[1:3,3];
+        range=(axes(img[], 1).-1)./Ny,
+        startvalues=(0.25, 0.75),
+        halign=:right,
+        horizontal=false
+    )
+    colsize!(gl, 1, Relative(0.86))
+    colsize!(gl, 2, Relative(0.002))
+    rowsize!(gl, 1, Relative(0.998))
+    rowsize!(gl, 2, Relative(0.002))
+    x1 = @lift($(roi_x.interval)[1]*Nx)
+    x2 = @lift($(roi_x.interval)[2]*Nx)
+    y1 = @lift($(roi_y.interval)[1]*Ny)
+    y2 = @lift($(roi_y.interval)[2]*Ny)
+    roi = @lift(Rect(Point2f.([
+        ($x1, $y1),
+        ($x2, $y2),
+    ])))
+    plt_roi = poly!(ax1, roi;
+        color=:transparent,
+        strokewidth=0.1,
+        strokecolor=:white,
+        linestyle=:dash
+    )
+    blobs_roi = @lift([
+        filter(b -> in_roi(b, $x1, $x2, $y1, $y2), blobs[i])
+        for i in eachindex(blobs)
+    ])
+    B = @lift($(blobs_roi)[$t])
     # initialize to the starting values of the sliders
     # then everything will be updated on changes
     trajectories = Observable(
-        track_blobs(blobs;
+        track_blobs(blobs_roi[];
             maxdist=p[:maxdist_startvalue],
             memory=p[:memory_startvalue],
             minlife=p[:minlife_startvalue],
@@ -116,52 +160,63 @@ function ParticleTracking.explore_tracking(
     N = @lift(length($heads))
     labels = @lift([isnantuple($(heads)[i]) ? "" : string(i) for i in eachindex($heads)])
     labelcolors = @lift(resample_cmap(p[:colormap], $N))
-    heatmap!(ax1, img; colormap=:bone)
-    poly!(ax1, B, p[:blobradius];
+    plt_img = heatmap!(ax1, img; colormap=:bone)
+    plt_blobs = poly!(ax1, B, p[:blobradius];
         color=:transparent,
         strokecolor=:pink,
         strokewidth=1,
     )
     colormap = @lift(resample_cmap(p[:colormap], length($trajectories)))
-    global s = series!(ax1, trajectories, t, p[:maxlength];
+    global plt_tracks = series!(ax1, trajectories, t, p[:maxlength];
         linewidth=p[:linewidth],
         color=colormap,
     )
-    global q = text!(ax1, heads; text=labels, color=labelcolors, fontsize=12)
+    global plt_heads = text!(ax1, heads; text=labels, color=labelcolors, fontsize=12)
     obs = @lift([
-        $(slider_maxdist.value),
-        $(slider_memory.value),
-        $(slider_minlife.value),
-        $(slider_g0.value),
-        $(slider_g2.value),
-        $(slider_w.value),
-        $(slider_k.value),
+        $(sliders_bottom["maxdist"].value),
+        $(sliders_bottom["memory"].value),
+        $(sliders_bottom["minlife"].value),
+        $(sliders_bottom["w"].value),
+        $(sliders_bottom["k"].value),
+        $(sliders_right["g0"].value),
+        $(sliders_right["g2"].value),
     ])
-    on(obs) do _
-        delete!(ax1.scene, s) # clean scene from old tracks
-        delete!(ax1.scene, q)
-        t[] = 1 # reset time
-        trajectories[] = track_blobs(blobs;
-            maxdist=slider_maxdist.value[],
-            memory=slider_memory.value[],
-            minlife=slider_minlife.value[],
-            g0=slider_g0.value[],
-            g2=slider_g2.value[],
-            w=slider_w.value[],
-            k=slider_k.value[],
-        )
-        N[] = length(trajectories[])
-        colormap[] = resample_cmap(p[:colormap], N[])
-        global s = series!(ax1, trajectories, t, p[:maxlength];
-            linewidth=p[:linewidth],
-            color=colormap,
-        )
-        global heads = @lift(
-            [location(track($t)) for track in trajectories[]]
-        )
-        labels[] = [isnantuple(heads[][i]) ? "" : string(i) for i in 1:N[]]
-        colormap[] = resample_cmap(p[:colormap], N[])
-        global q = text!(ax1, heads; text=labels, color=labelcolors, fontsize=12)
+    # on(obs) do
+    on(events(fig.scene).keyboardbutton) do event
+        if event.action == Keyboard.press && event.key == Keyboard.enter
+            delete!(ax1.scene, plt_tracks) # clean scene from old tracks
+            delete!(ax1.scene, plt_heads)
+            t[] = 1 # reset time
+            x1[] = roi_x.interval[][1]*Nx
+            x2[] = roi_x.interval[][2]Nx
+            y1[] = roi_y.interval[][1]*Ny
+            y2[] = roi_y.interval[][2]*Ny
+            blobs_roi[] = [
+                filter(b -> in_roi(b, x1[], x2[], y1[], y2[]), blobs[i])
+                for i in eachindex(blobs)
+            ]
+            trajectories[] = track_blobs(blobs_roi[];
+                maxdist=sliders_bottom["maxdist"].value[],
+                memory=sliders_bottom["memory"].value[],
+                minlife=sliders_bottom["minlife"].value[],
+                g0=sliders_right["g0"].value[],
+                g2=sliders_right["g2"].value[],
+                w=sliders_bottom["w"].value[],
+                k=sliders_bottom["k"].value[],
+            )
+            N[] = length(trajectories[])
+            colormap[] = resample_cmap(p[:colormap], N[])
+            global plt_tracks = series!(ax1, trajectories, t, p[:maxlength];
+                linewidth=p[:linewidth],
+                color=colormap,
+            )
+            global heads = @lift(
+                [location(track($t)) for track in trajectories[]]
+            )
+            labels[] = [isnantuple(heads[][i]) ? "" : string(i) for i in 1:N[]]
+            colormap[] = resample_cmap(p[:colormap], N[])
+            global plt_heads = text!(ax1, heads; text=labels, color=labelcolors, fontsize=12)
+        end
     end
     display(fig)
     while true
