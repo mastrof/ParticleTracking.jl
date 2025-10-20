@@ -70,7 +70,7 @@ function tracking(
             #== velocity calculation ==#
             velocities = Dict{Tuple{Int,Int}, NTuple{N,Float64}}()
             estimate_velocities!(velocities, ancestor_map, blobs, t, k)
-            predictive_cost = PredictiveCost(cost, velocities, w)
+            predictive_cost = PredictiveCost(cost, velocities, float(w))
             #== linking ==#
             # find link candidates between frames t and t+r
             from_indices = findall(.!linked_from[t])
