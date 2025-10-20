@@ -2,7 +2,6 @@ module ParticleTracking
 
 using OffsetArrays
 using DataFrames
-using Graphs
 using ImageFiltering
 using PaddedViews
 using GeometryBasics
